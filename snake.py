@@ -22,13 +22,13 @@ def main():
         # gets the user input
         #result_of_input = user_input()
         # calculates the game state
-        #game_state = physics(result_of_input)
+        game_state = physics(result_of_input)
         # creates the visual representaition from the information of the game
         # state
         graphics(game_state)
     # cleanly close the program
     #tear_down()
-    
+
 # 0 = empty space
 # 1 = boundary
 # 2 = fruit
@@ -38,6 +38,7 @@ def init():
     cells = []
     # initialize the game board
     fruit = [randint(0, WIDTH), randint(0, HEIGHT)]
+    snake_head = [10,10]
     for y in range(HEIGHT):
         for x in range(WIDTH):
             # check if cell is a boundary
@@ -45,6 +46,8 @@ def init():
                 cells.append(1)
             elif x == fruit[0] and y == fruit[1]:
                 cells.append(2)
+            elif x == snake_head[0] and y == snake_head[1]:
+                cells.append(3)
             else:
                 cells.append(0)
     return cells
@@ -53,11 +56,12 @@ def init():
 def graphics(game_state):
     # board output is a string representation of the board
     board_output = ""
+
     # decides which symbol each cell state is represented by
-    symbol_lookup = ['e','b','2','3','4']
+    symbol_lookup = [' ','#','F','O','0']
     # runs a for loop for each cell
     for i in range(WIDTH * HEIGHT):
-        # makes a new line if the line is the width of the board 
+        # makes a new line if the line is the width of the board
         if i % WIDTH == 0 and i > 0:
             board_output += '\n'
         board_output += symbol_lookup[game_state[i]]
@@ -66,13 +70,24 @@ def graphics(game_state):
     # prints the completed string that represents the board
     print(board_output)
     time.sleep(0.016)
-    
 
-    
-            
-        
-        
-    
+def physics(user_input):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -114,4 +129,5 @@ def graphics(game_state):
 
 if __name__ == "__main__":
     main()
-    
+
+
