@@ -1,5 +1,7 @@
 import os
 import time
+from math import floor
+import keyboard
 from random import randint
 
 clear = lambda: os.system('cls')
@@ -14,70 +16,104 @@ clear = lambda: os.system('cls')
 
 HEIGHT = 20
 WIDTH = 20
+FPS = 60
+
 
 def main():
     # set the initial state of the game
     game_state = init()
+    print(game_state)
     while(True):
+        frame_start_time = time.time()
         # gets the user input
-        #result_of_input = user_input()
+        result_of_input = user_input()
         # calculates the game state
-        game_state = physics(result_of_input)
+        # game_state = physics(result_of_input)
         # creates the visual representaition from the information of the game
         # state
-        graphics(game_state)
+        graphics(game_state, frame_start_time)
     # cleanly close the program
-    #tear_down()
+    tear_down()
 
-# 0 = empty space
-# 1 = boundary
-# 2 = fruit
-# 3 = snake head
-# 4 = snake body
+
 def init():
-    cells = []
-    # initialize the game board
-    fruit = [randint(0, WIDTH), randint(0, HEIGHT)]
-    snake_head = [10,10]
+    # game state is an array containing the locations of snake and fruit
+    game_state = []
+
+    # create the snake data using LIST COMPREHENSION #swag
+    snake_data = [[floor(WIDTH/2) + n, floor(HEIGHT/2)] for n in range(3)]
+    game_state.append(snake_data)
+    # create the fruit data
+    legal_values = False
+    while not legal_values:
+        # generates a random x and y value, candidates for the fruit coordinates
+        potential_fruit_coords = [randint(1, WIDTH - 2), randint(1, HEIGHT - 2)]
+        # checks that the x and y pair is not already occupied by the snek
+        if potential_fruit_coords not in snake_data:
+            legal_values = True
+
+    game_state.append(potential_fruit_coords)
+    return game_state
+
+
+def graphics(game_state, frame_start_time):
+    board = ""
     for y in range(HEIGHT):
         for x in range(WIDTH):
-            # check if cell is a boundary
-            if x == 0 or y == 0 or x == WIDTH - 1 or y == HEIGHT - 1:
-                cells.append(1)
-            elif x == fruit[0] and y == fruit[1]:
-                cells.append(2)
-            elif x == snake_head[0] and y == snake_head[1]:
-                cells.append(3)
+            # check if coordinates produced match the game state
+            coordinates = [x, y]
+            if coordinates == game_state[1]:
+                board += 'F'
+            elif coordinates in game_state[0]:
+                if coordinates == game_state[0][0]:
+                    # draws head
+                    board += 'O'
+                else:
+                    # draws body
+                    board += 'o'
+            # draws wall
+            elif x == 0 or x == WIDTH - 1 or y == 0 or y == HEIGHT - 1:
+                # draws wall
+                board += '#'
+            # draws unoccupied cell
             else:
-                cells.append(0)
-    return cells
-
-
-def graphics(game_state):
-    # board output is a string representation of the board
-    board_output = ""
-
-    # decides which symbol each cell state is represented by
-    symbol_lookup = [' ','#','F','O','0']
-    # runs a for loop for each cell
-    for i in range(WIDTH * HEIGHT):
-        # makes a new line if the line is the width of the board
-        if i % WIDTH == 0 and i > 0:
-            board_output += '\n'
-        board_output += symbol_lookup[game_state[i]]
-    # clears the screen
+                board += ' '
+                #draws nothing
+        board += '\n'
+    print(board)
+    delta_time = time.time() - frame_start_time
+    time.sleep(max(1/FPS, 1/FPS - delta_time))
     clear()
-    # prints the completed string that represents the board
-    print(board_output)
-    time.sleep(0.016)
-
-def physics(user_input):
 
 
+# def physics(user_input):
+
+def user_input():
+    if keyboard.is_pressed('w'):
+        return 0
+    if keyboard.is_pressed('a'):
+        return 1
+    if keyboard.is_pressed('s'):
+        return 2
+    if keyboard.is_pressed('d'):
+        return 3
+    return -1
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+def grid_to_cell_index(x,y):
+    return y * HEIGHT + x
 
 
 
