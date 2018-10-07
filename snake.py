@@ -18,20 +18,19 @@ HEIGHT = 20
 WIDTH = 20
 FPS = 60
 
-
 def main():
     # set the initial state of the game
     game_state = init()
-    print(game_state)
     while(True):
         frame_start_time = time.time()
         # gets the user input
         result_of_input = user_input()
         # calculates the game state
-        # game_state = physics(result_of_input)
+        game_state = physics(result_of_input, game_state)
         # creates the visual representaition from the information of the game
         # state
         graphics(game_state, frame_start_time)
+
     # cleanly close the program
     tear_down()
 
@@ -39,7 +38,6 @@ def main():
 def init():
     # game state is an array containing the locations of snake and fruit
     game_state = []
-
     # create the snake data using LIST COMPREHENSION #swag
     snake_data = [[floor(WIDTH/2) + n, floor(HEIGHT/2)] for n in range(3)]
     game_state.append(snake_data)
@@ -86,7 +84,34 @@ def graphics(game_state, frame_start_time):
     clear()
 
 
-# def physics(user_input):
+def physics(direction, state):
+    #checks where the snake is
+    snake = state[0]
+    snake_head = snake[0]
+    new_snake = []
+    # if up
+    if direction == 0:
+        snake_head[1] -= 1
+    #if left
+    if direction == 1:
+        snake_head[0] -= 1
+    # if down
+    if direction == 2:
+        snake_head[1] += 1
+    # if right
+    if direction == 3:
+        snake_head[0] += 1
+    new_snake.append(snake_head)
+    # iterates through the former snake and takes all but the last one
+    for part in snake:
+        new_snake.append(part)
+    return [new_snake, state[1]]
+    #increments the head by the direction, then replaces each body part with the last.
+
+
+
+
+
 
 def user_input():
     if keyboard.is_pressed('w'):
@@ -97,7 +122,6 @@ def user_input():
         return 2
     if keyboard.is_pressed('d'):
         return 3
-    return -1
 
 
 
@@ -165,5 +189,4 @@ def grid_to_cell_index(x,y):
 
 if __name__ == "__main__":
     main()
-
 
