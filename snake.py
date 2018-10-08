@@ -16,7 +16,7 @@ clear = lambda: os.system('cls')
 
 HEIGHT = 20
 WIDTH = 20
-FPS = 60
+FPS = 20
 
 def main():
     # set the initial state of the game
@@ -28,8 +28,10 @@ def main():
         # calculates the game state
         game_state = physics(result_of_input, game_state)
         # creates the visual representaition from the information of the game
+        print(game_state)
+
         # state
-        graphics(game_state, frame_start_time)
+        # graphics(game_state, frame_start_time)
 
     # cleanly close the program
     tear_down()
@@ -86,26 +88,40 @@ def graphics(game_state, frame_start_time):
 
 def physics(direction, state):
     #checks where the snake is
-    snake = state[0]
-    snake_head = snake[0]
-    new_snake = []
-    # if up
+    # state[0] is the snake while state[1] is the fruit
+    # state[0][0] is the head of the snake
+    # state[0][0][0] is the number, referring to the x position of the head
+    # iterates backwards through the snake and replaces each
+    # section with the one before it
+    def increment():
+        # takes numebrs from 2 to 0
+        for num in range(len(state[0]) -1, -1, -1):
+            #checks number is not 0
+            if num != 0:
+                # replaces the last value of the array with the preceding one
+                state[0][num] = state[0][num - 1]
+    # if up takes 1 away from the y value of the snake head
     if direction == 0:
-        snake_head[1] -= 1
-    #if left
+        increment()
+        state[0][0][1] -= 1
+
+    #if left takes 1 away from the x value of the snake head
     if direction == 1:
-        snake_head[0] -= 1
-    # if down
+        increment()
+        state[0][0][0] -= 1
+
+    # if down adds 1 to the y value of the snake head
     if direction == 2:
-        snake_head[1] += 1
-    # if right
+        increment()
+        state[0][0][1] += 1
+
+    # if right adds 1 to the x value of the snake head
     if direction == 3:
-        snake_head[0] += 1
-    new_snake.append(snake_head)
+        increment()
+        state[0][0][0] += 1
+
+    return [state[0], state[1]]
     # iterates through the former snake and takes all but the last one
-    for part in snake:
-        new_snake.append(part)
-    return [new_snake, state[1]]
     #increments the head by the direction, then replaces each body part with the last.
 
 
@@ -189,4 +205,5 @@ def grid_to_cell_index(x,y):
 
 if __name__ == "__main__":
     main()
+
 
