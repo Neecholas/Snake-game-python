@@ -16,28 +16,32 @@ clear = lambda: os.system('cls')
 
 HEIGHT = 20
 WIDTH = 20
-FPS = 20
+DEFAULT_DIRECTION = 1
+FPS = 1
+
+last_direction = None
+
 
 def main():
     # set the initial state of the game
     game_state = init()
-    while(True):
+    while True:
         frame_start_time = time.time()
         # gets the user input
-        result_of_input = user_input()
+        user_input()
         # calculates the game state
-        game_state = physics(result_of_input, game_state)
+        # print("Snake starts as:", game_state[0])
+        # print("About to perform physics on", game_state)
+        game_state = physics(game_state)
         # creates the visual representaition from the information of the game
-        print(game_state)
-
-        # state
-        # graphics(game_state, frame_start_time)
-
+        graphics(game_state, frame_start_time)
     # cleanly close the program
     tear_down()
 
 
 def init():
+    global last_direction
+    last_direction = DEFAULT_DIRECTION
     # game state is an array containing the locations of snake and fruit
     game_state = []
     # create the snake data using LIST COMPREHENSION #swag
@@ -86,58 +90,36 @@ def graphics(game_state, frame_start_time):
     clear()
 
 
-def physics(direction, state):
-    #checks where the snake is
-    # state[0] is the snake while state[1] is the fruit
-    # state[0][0] is the head of the snake
-    # state[0][0][0] is the number, referring to the x position of the head
-    # iterates backwards through the snake and replaces each
-    # section with the one before it
-    def increment():
-        # takes numebrs from 2 to 0
-        for num in range(len(state[0]) -1, -1, -1):
-            #checks number is not 0
-            if num != 0:
-                # replaces the last value of the array with the preceding one
-                state[0][num] = state[0][num - 1]
-    # if up takes 1 away from the y value of the snake head
-    if direction == 0:
-        increment()
-        state[0][0][1] -= 1
+def physics(state):
+    global last_direction
+    new_snake = []
+    for i in range(len(state[0]) - 1, 0, -1):
+        new_snake.insert(0, state[0][i-1])
+    if last_direction == 0:
+        new_snake.insert(0, [state[0][0][0], state[0][0][1] - 1])
+    if last_direction == 1:
+        new_snake.insert(0, [state[0][0][0] - 1, state[0][0][1]])
+    if last_direction == 2:
+        new_snake.insert(0, [state[0][0][0], state[0][0][1] + 1])
+    if last_direction == 3:
+        new_snake.insert(0, [state[0][0][0] + 1, state[0][0][1]])
 
-    #if left takes 1 away from the x value of the snake head
-    if direction == 1:
-        increment()
-        state[0][0][0] -= 1
+    new_fruit = state[1]
 
-    # if down adds 1 to the y value of the snake head
-    if direction == 2:
-        increment()
-        state[0][0][1] += 1
-
-    # if right adds 1 to the x value of the snake head
-    if direction == 3:
-        increment()
-        state[0][0][0] += 1
-
-    return [state[0], state[1]]
-    # iterates through the former snake and takes all but the last one
-    #increments the head by the direction, then replaces each body part with the last.
-
-
-
-
+    return [new_snake, new_fruit]
 
 
 def user_input():
+    global last_direction
     if keyboard.is_pressed('w'):
-        return 0
+        last_direction = 0
     if keyboard.is_pressed('a'):
-        return 1
+        last_direction = 1
     if keyboard.is_pressed('s'):
-        return 2
+        last_direction = 2
     if keyboard.is_pressed('d'):
-        return 3
+        last_direction = 3
+
 
 
 
@@ -205,5 +187,4 @@ def grid_to_cell_index(x,y):
 
 if __name__ == "__main__":
     main()
-
 
