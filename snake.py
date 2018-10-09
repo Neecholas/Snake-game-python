@@ -48,15 +48,16 @@ def init():
     snake_data = [[floor(WIDTH/2) + n, floor(HEIGHT/2)] for n in range(3)]
     game_state.append(snake_data)
     # create the fruit data
-    legal_values = False
-    while not legal_values:
-        # generates a random x and y value, candidates for the fruit coordinates
-        potential_fruit_coords = [randint(1, WIDTH - 2), randint(1, HEIGHT - 2)]
-        # checks that the x and y pair is not already occupied by the snek
-        if potential_fruit_coords not in snake_data:
-            legal_values = True
+    # legal_values = False
+    # while not legal_values:
+    #     # generates a random x and y value, candidates for the fruit coordinates
+    #     potential_fruit_coords = [randint(1, WIDTH - 2), randint(1, HEIGHT - 2)]
+    #     # checks that the x and y pair is not already occupied by the snek
+    #     if potential_fruit_coords not in snake_data:
+    #         legal_values = True
+    fruit = new_fruit(snake_data)
 
-    game_state.append(potential_fruit_coords)
+    game_state.append(fruit)
     return game_state
 
 
@@ -93,6 +94,7 @@ def graphics(game_state, frame_start_time):
 def physics(state):
     global last_direction
     new_snake = []
+    last_bit = state[0][len(state[0]) - 1]
     for i in range(len(state[0]) - 1, 0, -1):
         new_snake.insert(0, state[0][i-1])
     if last_direction == 0:
@@ -103,10 +105,26 @@ def physics(state):
         new_snake.insert(0, [state[0][0][0], state[0][0][1] + 1])
     if last_direction == 3:
         new_snake.insert(0, [state[0][0][0] + 1, state[0][0][1]])
+    # checks to see if the head has consumed the fruit
+    if new_snake[0] == state[1]:
+        # adds the last part of the original snake to the snake
+        new_snake.append(last_bit)
+        # creates a new fruit that is on a different part of the board
+        fruit = new_fruit(new_snake)
+    else:
+        fruit = state[1]
 
-    new_fruit = state[1]
+    return [new_snake, fruit]
 
-    return [new_snake, new_fruit]
+def new_fruit(snake_data):
+    legal_values = False
+    while not legal_values:
+        # generates a random x and y value, candidates for the fruit coordinates
+        potential_fruit_coords = [randint(1, WIDTH - 2), randint(1, HEIGHT - 2)]
+        # checks that the x and y pair is not already occupied by the snek
+        if potential_fruit_coords not in snake_data:
+            legal_values = True
+    return potential_fruit_coords
 
 
 def user_input():
@@ -187,4 +205,3 @@ def grid_to_cell_index(x,y):
 
 if __name__ == "__main__":
     main()
-
